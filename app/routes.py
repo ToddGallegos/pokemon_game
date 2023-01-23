@@ -93,11 +93,11 @@ def signin():
                     login_user(user)
                     return redirect(url_for('mypokemon'))
                 else:
-                    #wrong password
-                    pass
+                    flash("Incorrect Username or Password.")
+                    return redirect(url_for('signin'))
             else:
-                #user doesn't exist
-                pass
+                flash("User does not exist")
+                return redirect(url_for('signin'))
             
         return render_template('signin.html', form = form)
     
@@ -107,4 +107,5 @@ def signin():
 @app.route('/logout')
 def logout():
     logout_user()
+    flash("You've been logged out.")
     return redirect(url_for('signin'))
