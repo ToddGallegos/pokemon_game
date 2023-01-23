@@ -31,17 +31,19 @@ def pokemon():
             the_pokemon = pokemon_info(pokemon_name)
             form.pokemon_name.data = ''
             
-            pokemon_name = the_pokemon['pokemon_name'].capitalize()
-            base_hp = the_pokemon['base_hp']
-            base_attack = the_pokemon['base_attack']
-            base_defense = the_pokemon['base_defense']
-            base_experience = the_pokemon['base_experience']
-            ability_name = the_pokemon['ability_name'].capitalize()
-            front_shiny_sprite = the_pokemon['front_shiny_sprite']
-            user_id = current_user.get_id()
+            if the_pokemon:
+                pokemon_name = the_pokemon['pokemon_name'].capitalize()
+                base_hp = the_pokemon['base_hp']
+                base_attack = the_pokemon['base_attack']
+                base_defense = the_pokemon['base_defense']
+                base_experience = the_pokemon['base_experience']
+                ability_name = the_pokemon['ability_name'].capitalize()
+                front_shiny_sprite = the_pokemon['front_shiny_sprite']
+                user_id = current_user.get_id()
             
-            pokemon = Pokemon(pokemon_name, base_hp, base_attack, base_defense, base_experience, ability_name, front_shiny_sprite, user_id)
-            pokemon.save_to_db()
+                if current_user.is_authenticated:
+                    pokemon = Pokemon(pokemon_name, base_hp, base_attack, base_defense, base_experience, ability_name, front_shiny_sprite, user_id)
+                    pokemon.save_to_db()
             
             return render_template('pokemon.html', form = form, the_pokemon = the_pokemon)
         
@@ -50,7 +52,8 @@ def pokemon():
     
 @app.route('/mypokemon')
 def mypokemon():
-    return render_template('mypokemon.html')
+    pokemons = Pokemon.query.filter_by(user_id = current_user.id)
+    return render_template('mypokemon.html', pokemons = pokemons)
 
 @app.route('/signup', methods = ['GET', 'POST'])
 def signup():
@@ -88,7 +91,7 @@ def signin():
             if user:
                 if user.password == password:
                     login_user(user)
-                    return redirect(url_for('homepage'))
+                    return redirect(url_for('mypokemon'))
                 else:
                     #wrong password
                     pass
@@ -104,4 +107,4 @@ def signin():
 @app.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('homepage'))
+    return redirect(url_for('signin'))

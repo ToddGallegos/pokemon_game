@@ -1,3 +1,26 @@
 {% extends 'base.html' %}
+{% block content %}
 
- <!-- ADD DYNAMIC LIST OF USER POKEMON FROM DATABASE -->
+<h1 style="text-align:center; margin-top: 3%">Your Pokemon:</h1>
+<div class="d-flex justify-content-center flex-nowrap">
+
+{% for pokemon in pokemons %}
+    <div class="card" style="width: 18rem; margin:1rem">
+        <img style="width:75%; margin: 0 auto;" src="{{ pokemon.front_shiny_sprite }}" class="card-img-top" alt="{{ pokemon.pokemon_name }}">
+        <div class="card-body">
+            <h5 class="card-title">{{ pokemon.pokemon_name }}</h5>
+        </div>
+        <ul class="list-group list-group-flush">
+        <li class="list-group-item">HP: {{ pokemon.base_hp }}</li>
+        <li class="list-group-item">Attack: {{ pokemon.base_attack }}</li>
+        <li class="list-group-item">Defense: {{ pokemon.base_defense }}</li>
+        <li class="list-group-item">XP: {{ pokemon.base_experience }}</li>
+        <li class="list-group-item">Ability: {{ pokemon.ability_name }}</li>
+        </ul>
+        <div class="card-body">
+            <a href="#" class="card-link">Delete</a>
+        </div>
+    </div>
+{% endfor %}
+</div>
+ {% endblock %}
