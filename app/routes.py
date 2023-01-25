@@ -110,3 +110,30 @@ def logout():
     logout_user()
     flash("You've been logged out.")
     return redirect(url_for('signin'))
+
+@app.route('/profile', methods = ['GET', 'POST'])
+def profile():
+    user = current_user
+    form = SignUpForm()
+    if request.method == "POST":
+        if form.validate():
+            user_name = form.user_name.data
+            email = form.email.data
+            password = form.password.data
+            first_name = form.first_name.data
+            last_name = form.last_name.data
+            user.user_name = user_name
+            user.email = email
+            user.password = password
+            user.first_name = first_name
+            user.last_name = last_name
+            user.save_changes()
+            
+            flash("Successfully updated profile.")
+            return redirect(url_for('homepage'))
+        else:
+            flash("Invalid input. Please try again.")
+            return render_template('profile.html', form = form)
+    
+    elif request.method == "GET":
+        return render_template('profile.html', form = form)

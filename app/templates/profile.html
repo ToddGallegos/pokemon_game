@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1 style="text-align:center; margin-top: 3%">Edit Profile</h1>
+
+<div style="text-align:center">
+    <form method="POST" class="container col-3">
+        {{ form.hidden_tag() }}
+        {{ form.user_name(style="margin-top:1rem", class='form-control', value=current_user.user_name, autocomplete='off') }}
+        {{ form.email(style="margin-top:1rem", class='form-control', value=current_user.email, autocomplete='off') }}
+        {{ form.password(style="margin-top:1rem", class='form-control', placeholder="New password", autocomplete='off') }}
+        {{ form.confirm_password(style="margin-top:1rem", class='form-control', placeholder="Confirm new password", autocomplete='off') }}
+        {{ form.first_name(style="margin-top:1rem", class='form-control', value=current_user.first_name, autocomplete='off') }}
+        {{ form.last_name(style="margin-top:1rem", class='form-control', value=current_user.last_name, autocomplete='off') }}
+        {{ form.submit(value="Submit", style="margin-top:1rem", class="btn btn-primary btn-lg") }}
+    </form>
+</div>
+
+{% endblock %}
