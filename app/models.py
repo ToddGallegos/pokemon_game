@@ -30,7 +30,7 @@ class User(db.Model, UserMixin):
 
 class Pokemon(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    pokemon_name = db.Column(db.String, nullable = False)
+    pokemon_name = db.Column(db.String, nullable = False, unique = True)
     base_hp = db.Column(db.Integer, nullable = False)
     base_attack = db.Column(db.Integer, nullable = False)
     base_defense = db.Column(db.Integer, nullable = False)
