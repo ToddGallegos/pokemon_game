@@ -29,30 +29,36 @@ def pokemon():
                     return my_pokemon
 
             the_pokemon = pokemon_info(pokemon_name)
-            dblist = Pokemon.query.filter_by(pokemon_name = form.pokemon_name.data.capitalize()).all()
-            if len(Pokemon.query.filter_by(user_id = current_user.id).all()) < 5:
-                if dblist == []:
-                    form.pokemon_name.data = ''
+            
+            
+            if current_user.is_authenticated:
+            
+                form.pokemon_name.data = ''
+                
+                if the_pokemon:
+                    pokemon_name = the_pokemon['pokemon_name'].capitalize()
+                    base_hp = the_pokemon['base_hp']
+                    base_attack = the_pokemon['base_attack']
+                    base_defense = the_pokemon['base_defense']
+                    base_experience = the_pokemon['base_experience']
+                    ability_name = the_pokemon['ability_name'].capitalize()
+                    front_shiny_sprite = the_pokemon['front_shiny_sprite']
+                    user_id = current_user.id
                     
-                    if the_pokemon:
-                        pokemon_name = the_pokemon['pokemon_name'].capitalize()
-                        base_hp = the_pokemon['base_hp']
-                        base_attack = the_pokemon['base_attack']
-                        base_defense = the_pokemon['base_defense']
-                        base_experience = the_pokemon['base_experience']
-                        ability_name = the_pokemon['ability_name'].capitalize()
-                        front_shiny_sprite = the_pokemon['front_shiny_sprite']
-                        user_id = current_user.id
-                    
-                        if current_user.is_authenticated:
+                    dblist = Pokemon.query.filter_by(pokemon_name = pokemon_name).all()
+                    if dblist == []:
+                        if len(Pokemon.query.filter_by(user_id = current_user.id).all()) < 5:
                             pokemon = Pokemon(pokemon_name, base_hp, base_attack, base_defense, base_experience, ability_name, front_shiny_sprite, user_id)
                             pokemon.save_to_db()
-                    
-                    return render_template('pokemon.html', form = form, the_pokemon = the_pokemon)
-                flash("That Pokemon already has a trainer.")
-                return redirect(url_for('pokemon'))
-            flash("You already have the maximum number of Pokemon.")
-            return redirect(url_for('pokemon'))
+                        else:
+                            flash("You already have the maximum number of Pokemon.")
+                            return redirect(url_for('pokemon'))
+                    else:
+                        flash("That Pokemon already has a trainer.")
+                        return redirect(url_for('pokemon'))
+            return render_template('pokemon.html', form = form, the_pokemon = the_pokemon)
+            
+            
         
     elif request.method == "GET":
         return render_template('pokemon.html', form = form)
@@ -147,7 +153,7 @@ def profile():
             user.save_changes()
             
             flash("Successfully updated profile.")
-            return redirect(url_for('homepage'))
+            return redirect(url_for('profile'))
         else:
             flash("Invalid input. Please try again.")
             return render_template('profile.html', form = form)
