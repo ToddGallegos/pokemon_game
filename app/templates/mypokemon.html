@@ -2,7 +2,7 @@
 {% block content %}
 
 <h1 style="text-align:center; margin-top: 3%">Your Pokemon:</h1>
-<div class="d-flex justify-content-center flex-nowrap">
+<div class="d-flex justify-content-center flex-wrap">
 
 {% for pokemon in pokemons %}
     <div class="card" style="width: 18rem; margin:1rem">
@@ -18,7 +18,7 @@
         <li class="list-group-item">Ability: {{ pokemon.ability_name }}</li>
         </ul>
         <div class="card-body">
-            <a href="#" class="card-link">Delete</a>
+            <a href="/mypokemon/{{ pokemon.id }}/delete" class="card-link">Delete</a>
         </div>
     </div>
 {% endfor %}

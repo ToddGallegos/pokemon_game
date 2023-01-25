@@ -25,7 +25,7 @@ def pokemon():
                                 'base_defense': response.json()['stats'][2]['base_stat'], 
                                 'base_experience': response.json()['base_experience'], 
                                 'ability_name': response.json()['abilities'][0]['ability']['name'], 
-                                'front_shiny_sprite': response.json()['sprites']['front_shiny']}
+                                'front_shiny_sprite': response.json()['sprites']['front_default']}
                     return my_pokemon
 
             the_pokemon = pokemon_info(pokemon_name)
@@ -54,6 +54,16 @@ def pokemon():
 def mypokemon():
     pokemons = Pokemon.query.filter_by(user_id = current_user.id)
     return render_template('mypokemon.html', pokemons = pokemons)
+
+@app.route('/mypokemon/<pokemon_id>/delete')
+def delete_pokemon(pokemon_id):
+    pokemon = Pokemon.query.get(pokemon_id)
+    if current_user.id != pokemon.user_id:
+        flash("That Pokemon doesn't belong to you.")
+        redirect(url_for('mypokemon'))
+    pokemon.delete_pokemon()
+    flash("Pokemon deleted.")
+    return redirect(url_for('mypokemon'))
 
 @app.route('/signup', methods = ['GET', 'POST'])
 def signup():
