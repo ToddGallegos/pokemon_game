@@ -14,7 +14,7 @@
 {% if the_pokemon %}
 
 <div style="text-align:center; margin-top: 2rem">
-    <h2>Your Pokemon:</h2>
+    <h2>You caught this Pokemon!</h2>
     <img src={{ the_pokemon.front_shiny_sprite }} alt="{{ the_pokemon.pokemon_name }}">
     <h3>Name: {{ the_pokemon.pokemon_name.capitalize() }} </h3>
     <h3>Health: {{ the_pokemon.base_hp }} </h3>

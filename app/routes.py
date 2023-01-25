@@ -39,7 +39,7 @@ def pokemon():
                 base_experience = the_pokemon['base_experience']
                 ability_name = the_pokemon['ability_name'].capitalize()
                 front_shiny_sprite = the_pokemon['front_shiny_sprite']
-                user_id = current_user.get_id()
+                user_id = current_user.id
             
                 if current_user.is_authenticated:
                     pokemon = Pokemon(pokemon_name, base_hp, base_attack, base_defense, base_experience, ability_name, front_shiny_sprite, user_id)
@@ -91,7 +91,8 @@ def signin():
             if user:
                 if user.password == password:
                     login_user(user)
-                    return redirect(url_for('mypokemon'))
+                    flash("Successful Login. Welcome back!")
+                    return redirect(url_for('homepage'))
                 else:
                     flash("Incorrect Username or Password.")
                     return redirect(url_for('signin'))
