@@ -12,8 +12,8 @@
 <a style="display:block; width: 10rem; margin:2rem auto 0 auto" class="btn btn-primary btn-lg" href="{{ url_for('mypokemon') }}" role="button">My Pokemon</a>
 
 {% else %}
-    <a style="display:block; width: 10rem; margin:2rem auto 0 auto" class="btn btn-primary btn-lg" href="{{ url_for('signup') }}" role="button">Sign Up</a>
-    <p>Don't have an account?</p>
+    <a style="display:block; width: 10rem; margin:2rem auto 1rem auto" class="btn btn-primary btn-lg" href="{{ url_for('signin') }}" role="button">Sign In</a>
+    <p>Don't have an account? <a href="{{ url_for('signup') }}">Sign Up</a> </p>
 {% endif %}
 </div>
 {% endblock %}
