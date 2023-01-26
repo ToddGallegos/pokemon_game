@@ -1,6 +1,6 @@
 from app import app
 from flask import render_template, request, redirect, url_for, flash
-from .forms import PokemonCatcherForm, SignUpForm, SignInForm
+from .forms import PokemonCatcherForm, SignUpForm, SignInForm, AttackForm
 from .models import User, Pokemon
 import requests
 from flask_login import login_user, logout_user, current_user
@@ -67,6 +67,21 @@ def pokemon():
 def mypokemon():
     pokemons = Pokemon.query.filter_by(user_id = current_user.id)
     return render_template('mypokemon.html', pokemons = pokemons)
+
+@app.route('/battle')
+def battle():
+    form = AttackForm()
+    pokemons = Pokemon.query.filter_by(user_id = current_user.id)
+    if request.method == "POST":
+        if form.validate():
+            attacker = form.attacker.data.capitalize()
+            defender = form.defender.data.capitalize()
+            
+            pokemon1 = Pokemon.query.filter_by(pokemon_name = attacker)
+            pokemon2 = Pokemon.query.filter_by(pokemon_name = defender)
+        
+    return render_template('battle.html', pokemons = pokemons, form = form)
+    
 
 @app.route('/mypokemon/<pokemon_id>/delete')
 def delete_pokemon(pokemon_id):

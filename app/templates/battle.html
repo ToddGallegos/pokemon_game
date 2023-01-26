@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="d-inline-block" style="width:25vw; float:left; margin: 2rem 0 0 0">
+    <img style="width:80%; padding-left: 20%" src="{{ url_for('static', filename='battle-logo.png') }}" alt="battle logo">
+    <div style="text-align:center">
+        <form method="POST" class="container col-10">
+            {{ form.hidden_tag() }}
+            {{ form.attacker(style="margin-top:1rem", class='form-control', placeholder='Attacker', autocomplete='off') }}
+            {{ form.defender(style="margin-top:1rem", class='form-control', placeholder='Defender', autocomplete='off') }}
+            {{ form.submit(value="Attack!", style="margin-top:1rem", class="btn btn-danger btn-lg") }}
+        </form>
+    </div>
+</div>
+
+
+<div class="d-inline-block" style="width:70vw; height:90vh">
+<div class="d-inline-block">
+    <div class="d-flex justify-content-center flex-wrap">
+    {% for pokemon in pokemons %}
+        <div class="card" style="width: 10rem; margin:1rem">
+            <img style="width:75%; margin: 0 auto;" src="{{ pokemon.front_shiny_sprite }}" class="card-img-top" alt="{{ pokemon.pokemon_name }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ pokemon.pokemon_name }}</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+            <li class="list-group-item">HP: {{ pokemon.base_hp }}</li>
+            <li class="list-group-item">Attack: {{ pokemon.base_attack }}</li>
+            <li class="list-group-item">Defense: {{ pokemon.base_defense }}</li>
+            </ul>
+        </div>
+    {% endfor %}
+    </div>
+</div>
+
+<div class="d-inline-block">
+    <div class="d-flex justify-content-center flex-wrap">
+        {% for pokemon in pokemons %}
+            <div class="card" style="width: 10rem; margin:1rem">
+                <img style="width:75%; margin: 0 auto;" src="{{ pokemon.front_shiny_sprite }}" class="card-img-top" alt="{{ pokemon.pokemon_name }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ pokemon.pokemon_name }}</h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                <li class="list-group-item">HP: {{ pokemon.base_hp }}</li>
+                <li class="list-group-item">Attack: {{ pokemon.base_attack }}</li>
+                <li class="list-group-item">Defense: {{ pokemon.base_defense }}</li>
+                </ul>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+</div>
+
+ {% endblock %}

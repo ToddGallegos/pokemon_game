@@ -19,3 +19,8 @@ class SignInForm(FlaskForm):
     user_name = StringField("User Name", validators= [DataRequired()])
     password = PasswordField("Password", validators=[DataRequired()])
     submit = SubmitField()
+    
+class AttackForm(FlaskForm):
+    attacker = StringField("Attacker", validators=[DataRequired()])
+    defender = StringField("Defender", validators=[DataRequired()])
+    submit = SubmitField()
