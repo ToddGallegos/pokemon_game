@@ -56,3 +56,10 @@ class Pokemon(db.Model):
     def delete_pokemon(self):
         db.session.delete(self)
         db.session.commit()
+        
+    def attack(self, pokemon):
+        if self.base_attack > pokemon.base_defense:
+            pokemon.base_hp -= self.base_attack - pokemon.base_defense
+            db.session.commit()
+            if pokemon.base_hp < 1:
+                pokemon.delete_pokemon()

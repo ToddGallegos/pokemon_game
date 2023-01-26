@@ -3,19 +3,42 @@
 
 <div class="d-inline-block" style="width:25vw; float:left; margin: 2rem 0 0 0">
     <img style="width:80%; padding-left: 20%" src="{{ url_for('static', filename='battle-logo.png') }}" alt="battle logo">
-    <div style="text-align:center">
-        <form method="POST" class="container col-10">
-            {{ form.hidden_tag() }}
-            {{ form.attacker(style="margin-top:1rem", class='form-control', placeholder='Attacker', autocomplete='off') }}
-            {{ form.defender(style="margin-top:1rem", class='form-control', placeholder='Defender', autocomplete='off') }}
-            {{ form.submit(value="Attack!", style="margin-top:1rem", class="btn btn-danger btn-lg") }}
-        </form>
-    </div>
+    {% if not opponent_user_name %}
+        <p style="text-align:center; font-weight:500">(Enter "random" to test your luck!)</p>
+        <div style="text-align:center; margin-top:2rem">
+            <form method="POST" class="container col-10">
+                {{ opponentform.hidden_tag() }}
+                {{ opponentform.opponent(style="margin-top:1rem", class='form-control', placeholder="Opponent's Username", autocomplete='off') }}
+                {{ opponentform.submit_user(value="Find Opponent", style="margin-top:1rem", class="btn btn-danger btn-lg") }}
+            </form>
+        </div>
+    {% endif %}
+
+    {% if opponent_user_name %}
+        <div style="text-align:center; margin-top:2rem">
+            <h4 style="margin-top:1rem">{{ opponent_user_name }} wants to fight!</h4>
+        </div>
+    {% endif %}
+    
+    {% if enemy_pokemons %}
+        <div style="text-align:center; margin-top:3rem">
+            <form action="{{ url_for('fight', opponent_user_name = opponent_user_name) }}" method="POST" class="container col-10">
+                {{ form.hidden_tag() }}
+                {{ form.attacker(style="margin-top:1rem", class='form-control', placeholder='Your Pokemon', autocomplete='off') }}
+                {{ form.defender(style="margin-top:1rem", class='form-control', placeholder="Opponent's Pokemon", autocomplete='off') }}
+                {{ form.submit(value="Attack!", style="margin-top:1rem", class="btn btn-danger btn-lg") }}
+            </form>
+        </div>
+
+        <div style="text-align:center; margin-top:3rem">
+            <a href="/mypokemon" style="width:80%" class="btn btn-primary btn-lg  btn-block active" role="button" aria-pressed="true">Run away!</a>
+        </div>
+    {% endif %}
 </div>
 
 
-<div class="d-inline-block" style="width:70vw; height:90vh">
-<div class="d-inline-block">
+<div class="d-inline-block" style="width:70vw; height:85vh">
+<div class="d-inline-block" style="width:70vw; height: 21.25rem">
     <div class="d-flex justify-content-center flex-wrap">
     {% for pokemon in pokemons %}
         <div class="card" style="width: 10rem; margin:1rem">
@@ -33,9 +56,9 @@
     </div>
 </div>
 
-<div class="d-inline-block">
+<div class="d-inline-block" style="width:70vw; height: 21.25rem">
     <div class="d-flex justify-content-center flex-wrap">
-        {% for pokemon in pokemons %}
+        {% for pokemon in enemy_pokemons %}
             <div class="card" style="width: 10rem; margin:1rem">
                 <img style="width:75%; margin: 0 auto;" src="{{ pokemon.front_shiny_sprite }}" class="card-img-top" alt="{{ pokemon.pokemon_name }}">
                 <div class="card-body">

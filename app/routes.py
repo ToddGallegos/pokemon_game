@@ -1,9 +1,10 @@
 from app import app
 from flask import render_template, request, redirect, url_for, flash
-from .forms import PokemonCatcherForm, SignUpForm, SignInForm, AttackForm
+from .forms import PokemonCatcherForm, SignUpForm, SignInForm, AttackForm, UserAttackForm
 from .models import User, Pokemon
 import requests
 from flask_login import login_user, logout_user, current_user
+from random import randint
 
 @app.route('/')
 def homepage():
@@ -15,9 +16,8 @@ def pokemon():
     if request.method == "POST":
         if form.validate():
             pokemon_name = form.pokemon_name.data
-            
             def pokemon_info(p_name):
-                response = requests.get(f'https://pokeapi.co/api/v2/pokemon/{p_name.lower()}')
+                response = requests.get(f'https://pokeapi.co/api/v2/pokemon/{p_name}')
                 if response.ok:
                     my_pokemon = {'pokemon_name': response.json()['forms'][0]['name'], 
                                 'base_hp': response.json()['stats'][0]['base_stat'], 
@@ -27,9 +27,12 @@ def pokemon():
                                 'ability_name': response.json()['abilities'][0]['ability']['name'], 
                                 'front_shiny_sprite': response.json()['sprites']['front_default']}
                     return my_pokemon
-
-            the_pokemon = pokemon_info(pokemon_name)
-            
+                
+            if pokemon_name.lower() == "random":
+                pokemon_index = randint(1, 1279)
+                the_pokemon = pokemon_info(pokemon_index)
+            else:    
+                the_pokemon = pokemon_info(pokemon_name.lower())
             
             if current_user.is_authenticated:
             
@@ -68,27 +71,99 @@ def mypokemon():
     pokemons = Pokemon.query.filter_by(user_id = current_user.id)
     return render_template('mypokemon.html', pokemons = pokemons)
 
-@app.route('/battle')
+@app.route('/battle', methods = ["GET", "POST"])
 def battle():
     form = AttackForm()
+    opponentform = UserAttackForm()
     pokemons = Pokemon.query.filter_by(user_id = current_user.id)
+    
     if request.method == "POST":
+        if opponentform.validate():
+            opponent_user_name = opponentform.opponent.data
+            opp = User.query.filter_by(user_name = opponent_user_name).first()
+            
+            if opponent_user_name.lower() == "random":
+                opponents = User.query.all()
+                randomindex = randint(0, len(opponents) - 1)
+                opponent_user_name = opponents[randomindex].user_name
+                while opponent_user_name == current_user.user_name:
+                    randomindex = randint(0, len(opponents) - 1)
+                    opponent_user_name = opponents[randomindex].user_name
+                enemy_pokemons = Pokemon.query.join(User).filter(User.user_name == opponent_user_name).all()
+                return render_template('battle.html', pokemons = pokemons, form = form, opponentform = opponentform, enemy_pokemons = enemy_pokemons, opponent_user_name = opponent_user_name)
+            if opp:
+                enemy_pokemons = Pokemon.query.join(User).filter(User.user_name == opponent_user_name).all()
+                if form.validate():
+                    attacker = form.attacker.data.capitalize()
+                    defender = form.defender.data.capitalize()
+                    
+                    pokemon1 = Pokemon.query.filter_by(pokemon_name = attacker)
+                    pokemon2 = Pokemon.query.filter_by(pokemon_name = defender)
+                    return redirect(url_for('fight'))
+                return render_template('battle.html', pokemons = pokemons, form = form, opponentform = opponentform, enemy_pokemons = enemy_pokemons, opponent_user_name = opponent_user_name)
+            else:
+                flash("User does not exist.")
+                return redirect(url_for('battle'))
+    return render_template('battle.html', pokemons = pokemons, form = form, opponentform = opponentform)
+
+@app.route('/battle/<opponent_user_name>/fight', methods = ["GET", "POST"])
+def fight(opponent_user_name):
+    form = AttackForm()
+    opponentform = UserAttackForm()
+    opponentform.opponent.data = opponent_user_name
+    pokemons = Pokemon.query.filter_by(user_id = current_user.id).all()
+    enemy_pokemons = Pokemon.query.join(User).filter(User.user_name == opponent_user_name).all()
+    if request.method == "POST":
+        # if opponentform.validate():
+        #     redirect(url_for(battle))
         if form.validate():
             attacker = form.attacker.data.capitalize()
             defender = form.defender.data.capitalize()
             
-            pokemon1 = Pokemon.query.filter_by(pokemon_name = attacker)
-            pokemon2 = Pokemon.query.filter_by(pokemon_name = defender)
+            pokemon1 = Pokemon.query.filter_by(pokemon_name = attacker).first()
+            pokemon2 = Pokemon.query.filter_by(pokemon_name = defender).first()
+            if pokemon1 not in pokemons:
+                form.attacker.data = ''
+            if pokemon2 not in enemy_pokemons:
+                form.defender.data = ''
+            if pokemon2 in enemy_pokemons and pokemon1 in pokemons:
+                pokemon1.attack(pokemon2)
+                enemy_pokemons = Pokemon.query.join(User).filter(User.user_name == opponent_user_name).all()
+                pokemons = Pokemon.query.filter_by(user_id = current_user.id).all()
+                if not pokemon2:
+                    form.defender.data = ''
+                
+                if enemy_pokemons:
+                    if len(enemy_pokemons) > 1:
+                        enemy_pokemons[randint(0, len(enemy_pokemons) - 1)].attack(pokemon1)
+                        pokemons = Pokemon.query.filter_by(user_id = current_user.id).all()
+                        if not pokemon1:
+                            form.attacker.data = ''
+                        
+                    else:
+                        enemy_pokemons[0].attack(pokemon1)
+                        pokemons = Pokemon.query.filter_by(user_id = current_user.id).all()
+                else:
+                    flash("You won!")
+                    return redirect(url_for('homepage'))
+                if not pokemons:
+                    flash("You lost!")
+                    return redirect(url_for('homepage'))
+            if not pokemon1:
+                form.attacker.data = ''
+            if not pokemon2:
+                form.defender.data = ''
+            return render_template('battle.html', pokemons = pokemons, form = form, opponentform = opponentform, enemy_pokemons = enemy_pokemons, opponent_user_name = opponent_user_name)
+        return render_template('battle.html', pokemons = pokemons, form = form, opponentform = opponentform, enemy_pokemons = enemy_pokemons, opponent_user_name = opponent_user_name)
         
-    return render_template('battle.html', pokemons = pokemons, form = form)
-    
+    return render_template('battle.html', pokemons = pokemons, form = form, opponentform = opponentform, enemy_pokemons = enemy_pokemons, opponent_user_name = opponent_user_name)
 
 @app.route('/mypokemon/<pokemon_id>/delete')
 def delete_pokemon(pokemon_id):
     pokemon = Pokemon.query.get(pokemon_id)
     if current_user.id != pokemon.user_id:
         flash("That Pokemon doesn't belong to you.")
-        redirect(url_for('mypokemon'))
+        return redirect(url_for('mypokemon'))
     pokemon.delete_pokemon()
     flash("Pokemon deleted.")
     return redirect(url_for('mypokemon'))
