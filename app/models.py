@@ -13,6 +13,8 @@ class User(db.Model, UserMixin):
     last_name = db.Column(db.String(45), nullable = False)
     date_created = db.Column(db.DateTime, nullable = False, default=datetime.utcnow())
     pokemon = db.relationship("Pokemon", backref='owner', lazy=True)
+    kills = db.Column(db.Integer, default=0)
+    deaths = db.Column(db.Integer, default=0)
     
     def __init__(self, user_name, email, password, first_name, last_name):
         self.user_name = user_name
@@ -62,4 +64,9 @@ class Pokemon(db.Model):
             pokemon.base_hp -= self.base_attack - pokemon.base_defense
             db.session.commit()
             if pokemon.base_hp < 1:
+                owner = User.query.get(pokemon.user_id)
+                owner.deaths += 1
+                owner2 = User.query.get(self.user_id)
+                owner2.kills += 1
+                db.session.commit()
                 pokemon.delete_pokemon()

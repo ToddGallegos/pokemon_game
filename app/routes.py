@@ -90,17 +90,17 @@ def battle():
                     randomindex = randint(0, len(opponents) - 1)
                     opponent_user_name = opponents[randomindex].user_name
                 enemy_pokemons = Pokemon.query.join(User).filter(User.user_name == opponent_user_name).all()
-                return render_template('battle.html', pokemons = pokemons, form = form, opponentform = opponentform, enemy_pokemons = enemy_pokemons, opponent_user_name = opponent_user_name)
+                return render_template('battle.html', pokemons = pokemons, form = form, opponentform = opponentform, enemy_pokemons = enemy_pokemons, opponent_user_name = opponent_user_name, opp = opp)
             if opp:
                 enemy_pokemons = Pokemon.query.join(User).filter(User.user_name == opponent_user_name).all()
                 if form.validate():
                     attacker = form.attacker.data.capitalize()
                     defender = form.defender.data.capitalize()
                     
-                    pokemon1 = Pokemon.query.filter_by(pokemon_name = attacker)
-                    pokemon2 = Pokemon.query.filter_by(pokemon_name = defender)
+                    pokemon1 = Pokemon.query.filter_by(pokemon_name = attacker).first()
+                    pokemon2 = Pokemon.query.filter_by(pokemon_name = defender).first()
                     return redirect(url_for('fight'))
-                return render_template('battle.html', pokemons = pokemons, form = form, opponentform = opponentform, enemy_pokemons = enemy_pokemons, opponent_user_name = opponent_user_name)
+                return render_template('battle.html', pokemons = pokemons, form = form, opponentform = opponentform, enemy_pokemons = enemy_pokemons, opponent_user_name = opponent_user_name, opp = opp)
             else:
                 flash("User does not exist.")
                 return redirect(url_for('battle'))
