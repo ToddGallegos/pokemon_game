@@ -17,8 +17,8 @@
     {% if opponent_user_name %}
         <div style="text-align:center; margin-top:2rem">
             <h4 style="margin-top:1rem">{{ opponent_user_name }} wants to fight!</h4>
-            <h4>{{ opponent_user_name }} kills: {{opp}}</h4>
-            <h4>{{ opponent_user_name }} deaths: {{opp}}</h4>
+            <h4>{{ opponent_user_name }} kills: {{opp.kills}}</h4>
+            <h4>{{ opponent_user_name }} deaths: {{opp.deaths}}</h4>
         </div>
     {% endif %}
     

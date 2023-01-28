@@ -20,13 +20,15 @@
     {% else %}
         <h2>You found this Pokemon!</h2>
     {% endif %}
-    <img src={{ the_pokemon.front_shiny_sprite }} alt="{{ the_pokemon.pokemon_name }}">
+    {% if the_pokemon.front_shiny_sprite == None %}
+    <img style="width:95px" src="{{ the_pokemon.other_sprite }}" alt="{{ the_pokemon.pokemon_name }}">
+    {% else %}
+    <img src="{{ the_pokemon.front_shiny_sprite }}" alt="{{ the_pokemon.pokemon_name }}">
+    {% endif %}
     <h3>Name: {{ the_pokemon.pokemon_name.capitalize() }} </h3>
     <h3>Health: {{ the_pokemon.base_hp }} </h3>
     <h3>Attack: {{ the_pokemon.base_attack }} </h3>
     <h3>Defense: {{ the_pokemon.base_defense }} </h3>
-    <h3>XP: {{ the_pokemon.base_experience }} </h3>
-    <h3>Ability: {{ the_pokemon.ability_name.capitalize() }} </h3>
 </div>
 
 {% endif %}

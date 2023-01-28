@@ -36,18 +36,14 @@ class Pokemon(db.Model):
     base_hp = db.Column(db.Integer, nullable = False)
     base_attack = db.Column(db.Integer, nullable = False)
     base_defense = db.Column(db.Integer, nullable = False)
-    base_experience = db.Column(db.Integer, nullable = False)
-    ability_name = db.Column(db.String, nullable = False)
     front_shiny_sprite = db.Column(db.String, nullable = False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
     
-    def __init__(self, pokemon_name, base_hp, base_attack, base_defense, base_experience, ability_name, front_shiny_sprite, user_id):
+    def __init__(self, pokemon_name, base_hp, base_attack, base_defense, front_shiny_sprite, user_id):
         self.pokemon_name = pokemon_name
         self.base_hp = base_hp
         self.base_attack = base_attack
         self.base_defense = base_defense
-        self.base_experience = base_experience
-        self.ability_name = ability_name
         self.front_shiny_sprite = front_shiny_sprite
         self.user_id = user_id
         

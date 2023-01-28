@@ -23,13 +23,18 @@ def pokemon():
                                 'base_hp': response.json()['stats'][0]['base_stat'], 
                                 'base_attack': response.json()['stats'][1]['base_stat'], 
                                 'base_defense': response.json()['stats'][2]['base_stat'], 
-                                'base_experience': response.json()['base_experience'], 
-                                'ability_name': response.json()['abilities'][0]['ability']['name'], 
-                                'front_shiny_sprite': response.json()['sprites']['front_default']}
+                                'front_shiny_sprite': response.json()['sprites']['front_default'],
+                                'other_sprite': response.json()['sprites']['other']['official-artwork']['front_default']}
                     return my_pokemon
                 
             if pokemon_name.lower() == "random":
-                pokemon_index = randint(1, 1279)
+                a = randint(1, 1008)
+                b = randint(10001, 10271)
+                c = randint(1,1279)
+                if c < 1009:
+                    pokemon_index = a
+                elif c > 1008:
+                    pokemon_index = b
                 the_pokemon = pokemon_info(pokemon_index)
             else:    
                 the_pokemon = pokemon_info(pokemon_name.lower())
@@ -43,15 +48,16 @@ def pokemon():
                     base_hp = the_pokemon['base_hp']
                     base_attack = the_pokemon['base_attack']
                     base_defense = the_pokemon['base_defense']
-                    base_experience = the_pokemon['base_experience']
-                    ability_name = the_pokemon['ability_name'].capitalize()
-                    front_shiny_sprite = the_pokemon['front_shiny_sprite']
+                    if the_pokemon['front_shiny_sprite']:
+                        front_shiny_sprite = the_pokemon['front_shiny_sprite']
+                    else:
+                        front_shiny_sprite = the_pokemon['other_sprite']
                     user_id = current_user.id
                     
                     dblist = Pokemon.query.filter_by(pokemon_name = pokemon_name).all()
                     if dblist == []:
                         if len(Pokemon.query.filter_by(user_id = current_user.id).all()) < 5:
-                            pokemon = Pokemon(pokemon_name, base_hp, base_attack, base_defense, base_experience, ability_name, front_shiny_sprite, user_id)
+                            pokemon = Pokemon(pokemon_name, base_hp, base_attack, base_defense, front_shiny_sprite, user_id)
                             pokemon.save_to_db()
                         else:
                             flash("You already have the maximum number of Pokemon.")
@@ -80,8 +86,6 @@ def battle():
     if request.method == "POST":
         if opponentform.validate():
             opponent_user_name = opponentform.opponent.data
-            opp = User.query.filter_by(user_name = opponent_user_name).first()
-            
             if opponent_user_name.lower() == "random":
                 opponents = User.query.all()
                 randomindex = randint(0, len(opponents) - 1)
@@ -89,21 +93,27 @@ def battle():
                 while opponent_user_name == current_user.user_name:
                     randomindex = randint(0, len(opponents) - 1)
                     opponent_user_name = opponents[randomindex].user_name
+                opp = User.query.filter_by(user_name = opponent_user_name).first()
                 enemy_pokemons = Pokemon.query.join(User).filter(User.user_name == opponent_user_name).all()
-                return render_template('battle.html', pokemons = pokemons, form = form, opponentform = opponentform, enemy_pokemons = enemy_pokemons, opponent_user_name = opponent_user_name, opp = opp)
-            if opp:
-                enemy_pokemons = Pokemon.query.join(User).filter(User.user_name == opponent_user_name).all()
-                if form.validate():
-                    attacker = form.attacker.data.capitalize()
-                    defender = form.defender.data.capitalize()
-                    
-                    pokemon1 = Pokemon.query.filter_by(pokemon_name = attacker).first()
-                    pokemon2 = Pokemon.query.filter_by(pokemon_name = defender).first()
-                    return redirect(url_for('fight'))
                 return render_template('battle.html', pokemons = pokemons, form = form, opponentform = opponentform, enemy_pokemons = enemy_pokemons, opponent_user_name = opponent_user_name, opp = opp)
             else:
-                flash("User does not exist.")
-                return redirect(url_for('battle'))
+                opp = User.query.filter_by(user_name = opponent_user_name).first()
+                kills = opp.kills
+                deaths = opp.deaths
+                
+                if opp:
+                    enemy_pokemons = Pokemon.query.join(User).filter(User.user_name == opponent_user_name).all()
+                    if form.validate():
+                        attacker = form.attacker.data.capitalize()
+                        defender = form.defender.data.capitalize()
+                        
+                        pokemon1 = Pokemon.query.filter_by(pokemon_name = attacker).first()
+                        pokemon2 = Pokemon.query.filter_by(pokemon_name = defender).first()
+                        return redirect(url_for('fight'))
+                    return render_template('battle.html', pokemons = pokemons, form = form, opponentform = opponentform, enemy_pokemons = enemy_pokemons, opponent_user_name = opponent_user_name, opp = opp, kills = kills, deaths = deaths)
+                else:
+                    flash("User does not exist.")
+                    return redirect(url_for('battle'))
     return render_template('battle.html', pokemons = pokemons, form = form, opponentform = opponentform)
 
 @app.route('/battle/<opponent_user_name>/fight', methods = ["GET", "POST"])
