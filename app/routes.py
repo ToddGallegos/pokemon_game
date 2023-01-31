@@ -24,7 +24,8 @@ def pokemon():
                                 'base_attack': response.json()['stats'][1]['base_stat'], 
                                 'base_defense': response.json()['stats'][2]['base_stat'], 
                                 'front_shiny_sprite': response.json()['sprites']['front_default'],
-                                'other_sprite': response.json()['sprites']['other']['official-artwork']['front_default']}
+                                'other_sprite': response.json()['sprites']['other']['official-artwork']['front_default'],
+                                'questionmark': url_for('static', filename = 'questionmark.jpg')}
                     return my_pokemon
                 
             if pokemon_name.lower() == "random":
@@ -50,8 +51,10 @@ def pokemon():
                     base_defense = the_pokemon['base_defense']
                     if the_pokemon['front_shiny_sprite']:
                         front_shiny_sprite = the_pokemon['front_shiny_sprite']
-                    else:
+                    elif the_pokemon['other_sprite']:
                         front_shiny_sprite = the_pokemon['other_sprite']
+                    else:
+                        front_shiny_sprite = url_for('static', filename = 'questionmark.jpg')
                     user_id = current_user.id
                     
                     dblist = Pokemon.query.filter_by(pokemon_name = pokemon_name).all()
@@ -163,10 +166,11 @@ def fight(opponent_user_name):
                 form.attacker.data = ''
             if not pokemon2:
                 form.defender.data = ''
-            return render_template('battle.html', pokemons = pokemons, form = form, opponentform = opponentform, enemy_pokemons = enemy_pokemons, opponent_user_name = opponent_user_name)
-        return render_template('battle.html', pokemons = pokemons, form = form, opponentform = opponentform, enemy_pokemons = enemy_pokemons, opponent_user_name = opponent_user_name)
+            opp = User.query.filter_by(user_name = opponent_user_name).first()
+            return render_template('battle.html', pokemons = pokemons, form = form, opponentform = opponentform, enemy_pokemons = enemy_pokemons, opponent_user_name = opponent_user_name, opp = opp)
+        return render_template('battle.html', pokemons = pokemons, form = form, opponentform = opponentform, enemy_pokemons = enemy_pokemons, opponent_user_name = opponent_user_name, opp = opp)
         
-    return render_template('battle.html', pokemons = pokemons, form = form, opponentform = opponentform, enemy_pokemons = enemy_pokemons, opponent_user_name = opponent_user_name)
+    return render_template('battle.html', pokemons = pokemons, form = form, opponentform = opponentform, enemy_pokemons = enemy_pokemons, opponent_user_name = opponent_user_name, opp = opp)
 
 @app.route('/mypokemon/<pokemon_id>/delete')
 def delete_pokemon(pokemon_id):

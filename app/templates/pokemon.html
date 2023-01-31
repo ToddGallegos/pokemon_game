@@ -20,7 +20,9 @@
     {% else %}
         <h2>You found this Pokemon!</h2>
     {% endif %}
-    {% if the_pokemon.front_shiny_sprite == None %}
+    {% if the_pokemon.front_shiny_sprite == None and the_pokemon.other_sprite == None %}
+    <img style="width:95px" src="{{ the_pokemon.questionmark }}" alt="{{ the_pokemon.pokemon_name }}">
+    {% elif the_pokemon.front_shiny_sprite == None %}
     <img style="width:95px" src="{{ the_pokemon.other_sprite }}" alt="{{ the_pokemon.pokemon_name }}">
     {% else %}
     <img src="{{ the_pokemon.front_shiny_sprite }}" alt="{{ the_pokemon.pokemon_name }}">

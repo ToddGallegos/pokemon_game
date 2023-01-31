@@ -43,8 +43,8 @@
 <div class="d-inline-block" style="width:70vw; height: 21.25rem">
     <div class="d-flex justify-content-center flex-wrap">
     {% for pokemon in pokemons %}
-        <div class="card" style="width: 10rem; margin:1rem">
-            <img style="width:75%; margin: 0 auto;" src="{{ pokemon.front_shiny_sprite }}" class="card-img-top" alt="{{ pokemon.pokemon_name }}">
+        <div class="card" style="width: 12rem; margin:1rem">
+            <img style="width:60%; margin: 0 auto;" src="{{ pokemon.front_shiny_sprite }}" class="card-img-top" alt="{{ pokemon.pokemon_name }}">
             <div class="card-body">
                 <h5 class="card-title">{{ pokemon.pokemon_name }}</h5>
             </div>
@@ -61,8 +61,8 @@
 <div class="d-inline-block" style="width:70vw; height: 21.25rem">
     <div class="d-flex justify-content-center flex-wrap">
         {% for pokemon in enemy_pokemons %}
-            <div class="card" style="width: 10rem; margin:1rem">
-                <img style="width:75%; margin: 0 auto;" src="{{ pokemon.front_shiny_sprite }}" class="card-img-top" alt="{{ pokemon.pokemon_name }}">
+            <div class="card" style="width: 12rem; margin:1rem">
+                <img style="width:60%; margin: 0 auto;" src="{{ pokemon.front_shiny_sprite }}" class="card-img-top" alt="{{ pokemon.pokemon_name }}">
                 <div class="card-body">
                     <h5 class="card-title">{{ pokemon.pokemon_name }}</h5>
                 </div>
