@@ -66,3 +66,13 @@ class Pokemon(db.Model):
                 owner2.kills += 1
                 db.session.commit()
                 pokemon.delete_pokemon()
+                
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'pokemon_name': self.pokemon_name,
+            'front_shiny_sprite': self.front_shiny_sprite,
+            'base_attack': self.base_attack,
+            'base_defense': self.base_defense,
+            'base_hp': self.base_hp
+        }

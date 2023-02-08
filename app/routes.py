@@ -1,5 +1,5 @@
 from app import app
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash, jsonify
 from .forms import PokemonCatcherForm, SignUpForm, SignInForm, AttackForm, UserAttackForm
 from .models import User, Pokemon
 import requests
@@ -264,3 +264,8 @@ def profile():
     
     elif request.method == "GET":
         return render_template('profile.html', form = form)
+    
+@app.route('/pokemonapi')
+def pokemonapi():
+    pokemons = Pokemon.query.all()
+    return jsonify([p.to_dict() for p in pokemons])
